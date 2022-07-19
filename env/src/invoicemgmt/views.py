@@ -5,6 +5,7 @@ from .forms import InvoiceForm, InvoiceSearchForm, InvoiceUpdateForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+
 #library to import the excel file
 import openpyxl
 #libraries to create the pdf file and add text to it
@@ -54,6 +55,7 @@ def list_invoice(request):
 
     title = 'List of Invoices'
     queryset = Invoice.objects.all()
+    
 
     form = InvoiceSearchForm(request.POST or None)
     context = {"title": title, "queryset": queryset, "form": form}
@@ -65,6 +67,7 @@ def list_invoice(request):
             "form": form,
             "title": title,
             "queryset": queryset,
+            
         }
     if form['generate_invoice'].value() == True:
         instance = queryset
@@ -319,6 +322,14 @@ def list_invoice(request):
     return render(request, "list_invoice.html", context)
 
 @login_required
+def list_excel_data(request):
+    excelQuerySet = ExcelDataImport.objects.all()
+    context = {
+        'excelQuerySet': excelQuerySet,
+    }
+    return render(request,'excelUploadData.html',context)
+
+@login_required
 def update_invoice(request, pk):
     queryset = Invoice.objects.get(id=pk)
     form = InvoiceUpdateForm(instance=queryset)
@@ -334,6 +345,23 @@ def update_invoice(request, pk):
     return render(request, 'entry.html', context)
 
 @login_required
+def update_excel_data(request, pk):
+    queryset = ExcelDataImport.objects.get(id=pk)
+    print(queryset)
+    # if request.method == 'POST':
+    #     form = InvoiceUpdateForm(request.POST, instance=queryset)
+    #     if form.is_valid():
+    #         form.save()
+    #         return redirect('/list_invoice')
+
+    # context = {
+    #     'form': form
+    # }
+    # return render(request, 'entry.html', context)
+    return redirect('list_invoice')
+
+
+@login_required
 def delete_invoice(request, pk):
     queryset = Invoice.objects.get(id=pk)
     if request.method == 'POST':
@@ -341,6 +369,13 @@ def delete_invoice(request, pk):
         return redirect('/list_invoice')
     return render(request, 'delete_invoice.html')
 
+@login_required
+def delete_excel_data(request, pk):
+    queryset = ExcelDataImport.objects.get(id=pk)
+    if request.method == 'POST':
+        queryset.delete()
+        return redirect('/list_invoice')
+    return render(request, 'delete_invoice.html')
 
 
 def create_invoice(sheet):
@@ -350,11 +385,9 @@ def create_invoice(sheet):
     date = sheet.cell(row = 2, column = 4).value
     invoice_number = str(1234)
 
-
-
-
-    inv_obj = Invoice(name=to, invoice_number=invoice_number, phone_number=phone,invoice_date=str(date))
-    inv_obj.save()
+    # inv_obj = Invoice(name=to, invoice_number=invoice_number, phone_number=phone,invoice_date=str(date))
+    # inv_obj.save()
+    
     pdf_file_name = str(invoice_type) + '_' + str(to) +'.pdf'
     c = canvas.Canvas(pdf_file_name)
 

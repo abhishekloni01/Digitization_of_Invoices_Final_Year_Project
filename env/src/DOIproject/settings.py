@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'invoicemgmt',
     'crispy_forms',
+    'import_export',
 ]
 
 MIDDLEWARE = [

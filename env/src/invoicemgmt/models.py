@@ -3,9 +3,7 @@ from django.db import models
 # Create your models here.
 
 class Invoice(models.Model):
-	# def get_my_choices():
-	# 	for i in Invoice.objects.values('line_one'):
-	# 		yield (str(i),i)
+	
 	comments = models.TextField(max_length=3000, default='', blank=True, null=True)
 	invoice_number = models.IntegerField(blank=True, null=True,default=0)
 	invoice_date = models.DateField(auto_now_add=False, auto_now=False, blank=True, null=True)
@@ -77,8 +75,21 @@ class Invoice(models.Model):
     # def __str__(self):
     #     return self.name + ' - ' + str(self.invoice_number)
 
+
+class ExcelDataImport(models.Model):
+	to = models.CharField('To',max_length=100)
+	invoice_type = models.CharField('Invoice type',max_length=100, blank=True, null=True)
+	phone = models.CharField('Phone',max_length=100, blank=True, null=True)
+	date = models.CharField('Date',max_length=100, blank=True, null=True)
+	# items  = models.JSONField(_(""), encoder=, decoder=)
+	item = models.CharField('Item',max_length=100, blank=True, null=True)
+	quantity = models.IntegerField('Quantity', blank=True, null=True)
+	unit_price = models.IntegerField('Unit Price ($)',  blank=True, null=True)
+	total = models.IntegerField('Total ($)',  blank=True, null=True)
+	amount = models.IntegerField('Amount ($)',  blank=True, null=True)
 	
     
-
+	def __str__(self) -> str:
+		return self.to
 
 	
