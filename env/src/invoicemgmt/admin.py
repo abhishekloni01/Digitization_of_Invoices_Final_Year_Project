@@ -6,6 +6,7 @@ from .forms import InvoiceForm
 from import_export.admin import ImportExportModelAdmin
 from .models import ExcelDataImport
 from .resources import ExcelDataImportResource
+from .models import CSVFileUpload
 
 
 class ExcelImportAdmin(ImportExportModelAdmin):
@@ -22,3 +23,4 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(ExcelDataImport, ExcelImportAdmin)
+admin.site.register(CSVFileUpload)

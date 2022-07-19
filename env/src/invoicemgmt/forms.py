@@ -1,5 +1,5 @@
 from django import forms
-from .models import Invoice
+from .models import Invoice,CSVFileUpload
 
 required = 'This field is required'
 
@@ -94,3 +94,9 @@ class InvoiceUpdateForm(forms.ModelForm):
 		if not line_one_quantity:
 			raise forms.ValidationError(required)
 		return line_one_quantity
+
+
+class CSVFileUploadForm(forms.ModelForm):
+	class Meta:
+			model  = CSVFileUpload
+			fields = ('csv_file',)

@@ -82,18 +82,22 @@
               <th>COUNT</th>
               <th>DATE</th>
               <th>CUSTOMER NAME</th>
-              <th>INVOICE Type</th>
-              <th>AMOUNT</th>
-              <th>DELETE</th>
+              <th>INVOICE Number</th>
+              <th>Total</th>
+              <th>Discount</th>
+              <th>Balance_Due</th>
+              <th>Delete</th>
             </tr>
           </thead>
         {% for instance in excelQuerySet %}
             <tr>
               <td>{{forloop.counter}}</td>
-              <td>{{instance.date}}</td>
-              <td><a href="{% url 'excel_data_update' instance.id %}">{{instance.to}}</a></td>
-              <td>{{instance.invoice_type}}</td>
-              <td>{{instance.total}}</td>
+              <td>{{instance.Date}}</td>
+              <td><a href="{% url 'excel_data_update' instance.id %}">{{instance.Contact_Name}}</a></td>
+              <td>{{instance.Invoice_Number}}</td>
+              <td>{{instance.Total}}</td>
+              <td>{{instance.Discount}}</td>
+              <td>{{instance.Balance_Due}}</td>
               <td><a href="{% url 'excel_data_delete' instance.id %}">Delete</a></td>
             </tr>
         {% endfor %}

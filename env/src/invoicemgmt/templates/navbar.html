@@ -31,7 +31,7 @@
 </button>
 
 <!-- Modal -->
-<form  action="{% url 'upload_file' %}"  method="post"  enctype="multipart/form-data">
+{% comment %} <form  action="{% url 'upload_csv_file' %}"  method="post"  enctype="multipart/form-data">
   {% csrf_token %}
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -62,29 +62,42 @@
       <p>Uploaded file: <a href="{{url}}">{{url}}</a></p>
     {% endif %}
   </form>
-  <br>
+  <br> {% endcomment %}
 
 
-    {% comment %} <form  action="{% url 'upload_file' %}"  method="post"  enctype="multipart/form-data">
-      {% csrf_token %} {% endcomment %}
-        {% comment %} <label for="choose_file">
-          
-        </label>
-        <br>
-        <input type="file" name="choose_file" id="choose_file" />
-          <br>
-          <span>Choose Files</span>
-        <br> {% endcomment %}
-        
-        {% comment %} <button class="btn btn-sm btn-outline-success" type="submit">
-          Upload
-        </button>
-        {% if url %}
-        <p>Uploaded file: <a href="{{url}}">{{url}}</a></p>
-      {% endif %}
-            
-    </form> {% endcomment %}
- 
+  <form method='POST' action="{% url 'upload_csv_file' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+
+            <div class="mb-3">
+              <p>Upload CSV or Excel File</p>
+              
+              {{ csv_upload_form.as_p}}
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button class="btn btn-sm btn-outline-success" type="submit">
+              Upload
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+    
+ <br>
   <a href="/accounts/logout"><button class="btn btn-danger">{{ user }} | Logout</button></a>
   {% else %}
   <a href="/accounts/login"><button class="btn btn-danger">Login</button></a>

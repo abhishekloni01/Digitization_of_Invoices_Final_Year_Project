@@ -1,9 +1,12 @@
+# from curses.ascii import HT
+from fileinput import filename
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import *
-from .forms import InvoiceForm, InvoiceSearchForm, InvoiceUpdateForm
+from .forms import InvoiceForm, InvoiceSearchForm, InvoiceUpdateForm, CSVFileUploadForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.files.storage import FileSystemStorage
 
 
 #library to import the excel file
@@ -23,6 +26,15 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.pagesizes import landscape
 from reportlab.platypus import Image
 # End for report lab
+
+
+#csv,pdf libs
+from docxtpl import DocxTemplate
+import pandas as pd
+from win32com import client
+import pythoncom
+import time
+import os
 
 # Create your views here.
 
@@ -58,7 +70,8 @@ def list_invoice(request):
     
 
     form = InvoiceSearchForm(request.POST or None)
-    context = {"title": title, "queryset": queryset, "form": form}
+    csv_upload_form = CSVFileUploadForm()
+    context = {"title": title, "queryset": queryset, "form": form, "csv_upload_form":csv_upload_form}
 
     if request.method == 'POST':
         queryset = Invoice.objects.filter(
@@ -379,14 +392,13 @@ def delete_excel_data(request, pk):
 
 
 def create_invoice(sheet):
-    to = sheet.cell(row = 2, column =1 ).value
-    invoice_type = sheet.cell(row = 2, column = 2).value
-    phone = sheet.cell(row = 2, column = 3).value
-    date = sheet.cell(row = 2, column = 4).value
+    to = sheet.cell(row = 2, column =2 ).value
+    invoice_type = sheet.cell(row = 2, column = 3).value
+    phone = sheet.cell(row = 2, column = 4).value
+    date = sheet.cell(row = 2, column = 5).value
     invoice_number = str(1234)
 
-    # inv_obj = Invoice(name=to, invoice_number=invoice_number, phone_number=phone,invoice_date=str(date))
-    # inv_obj.save()
+
     
     pdf_file_name = str(invoice_type) + '_' + str(to) +'.pdf'
     c = canvas.Canvas(pdf_file_name)
@@ -430,11 +442,11 @@ def create_invoice(sheet):
     for i in range(2,row_count+1):
         #Reading values from excel file
 
-        item = sheet.cell(row = i, column = 5).value
-        quantity = sheet.cell(row = i, column = 6).value
-        unit_price = sheet.cell(row = i, column = 7).value
-        total = sheet.cell(row = i, column = 8).value
-        total_amount = sheet.cell(row = i, column = 9).value
+        item = sheet.cell(row = i, column = 6).value
+        quantity = sheet.cell(row = i, column = 7).value
+        unit_price = sheet.cell(row = i, column = 8).value
+        total = sheet.cell(row = i, column = 9).value
+        total_amount = sheet.cell(row = i, column = 10).value
         
         
 
@@ -474,8 +486,6 @@ def create_invoice(sheet):
 
 
 
-        
-
 def upload_file(request):
     if request.method == "POST":
         uploaded_file = request.FILES['choose_file']
@@ -489,29 +499,65 @@ def upload_file(request):
         sheet = wb['invoices2']
         print(len(list(sheet.rows)))
 
-        #import company's logo
-        # im = Image.open("C:\\Users\\Abeeshek\\Desktop\\Invoice management system project\\Digitization of Invoice\\env\\src\\logo.png")
-        # width, height = im.size
-        # ratio = width/height
-        # image_width = 400
-        # image_height = int(image_width / ratio)
-
-        #Page information
-        # page_width = 2156
-        # page_height = 3050
-
-        #Invoice variables
-        # company_name ='The best company in the world'
-        # payment_terms = 'x'
-        # contact_info = 'x'
-        # margin = 100
-        # month_year = 'August 2019'
-
         create_invoice(sheet)
         messages.success(request, 'Successfully Generated Invoice')  
         return redirect('/')
 
+def upload_csv_file(request):
+    if request.method=="POST":
+        # uploaded_file = request.FILES['document']
+        # fs = FileSystemStorage()
+        # fs.save(uploaded_file.name,uploaded_file)
+        file = CSVFileUploadForm(request.POST, request.FILES)
+        if file.is_valid():
+            file.save()
+    processCSVData()
+    return HttpResponse('csv file uploaded!!!')
 
+def processCSVData():
+    # word_app = client.Dispatch('Word.Application')
+    word_app = client.Dispatch("Word.Application",pythoncom.CoInitialize())
+    time.sleep(1)
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    ROOT_DIR = ROOT_DIR[:-12]
+    file_name = CSVFileUpload.objects.last().csv_file.name
+    file_name = file_name.split('/')[1]
+    print(file_name)
+    file_path = 'C:\\Users\\Abeeshek\\Desktop\\Invoice management system project\\Digitization of Invoice\\env\\src\\media\\csvs'+'\\'+'\\'+file_name
 
+    print(file_path)
+    
+    data_frame = pd.read_excel(file_path)
 
+    print(data_frame)
+    for r_index, row in data_frame.iterrows():
+        cust_name = row['Contact_Name']
+        print(cust_name)    
 
+        tpl = DocxTemplate(r"C:\Users\Abeeshek\Desktop\Invoice management system project\Digitization of Invoice\env\src\media\csvs\Invoice-Template-doc-margin.docx")
+        df_to_doct = data_frame.to_dict()
+        x = data_frame.to_dict(orient = 'records')
+        context = x
+        tpl.render(context[r_index])
+        print('before')
+        
+        
+        print(ROOT_DIR)
+        tpl.save(ROOT_DIR+'\media\csvs\Docs\\'+cust_name+'.docx')
+        print('after')
+        time.sleep(2)
+        # Get Project Folder Path
+        # ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+        print(ROOT_DIR)
+        #Convert the Docx to PDF file
+        doc = word_app.Documents.Open(ROOT_DIR+'\media\csvs\Docs\\' + cust_name + '.docx')
+        print('Exporting...')
+        doc.SaveAs(ROOT_DIR+'\media\csvs\PDFs\\'+cust_name+'.pdf',FileFormat=17)
+        print("Successfully Exported")
+
+    word_app.Quit()
+    # messages.success(request,'Successfully Created Invoices')
+    return redirect('/')
+
+# def saveExcelDataToDB():

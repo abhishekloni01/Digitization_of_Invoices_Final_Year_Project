@@ -77,19 +77,29 @@ class Invoice(models.Model):
 
 
 class ExcelDataImport(models.Model):
-	to = models.CharField('To',max_length=100)
-	invoice_type = models.CharField('Invoice type',max_length=100, blank=True, null=True)
-	phone = models.CharField('Phone',max_length=100, blank=True, null=True)
-	date = models.CharField('Date',max_length=100, blank=True, null=True)
-	# items  = models.JSONField(_(""), encoder=, decoder=)
-	item = models.CharField('Item',max_length=100, blank=True, null=True)
-	quantity = models.IntegerField('Quantity', blank=True, null=True)
-	unit_price = models.IntegerField('Unit Price ($)',  blank=True, null=True)
-	total = models.IntegerField('Total ($)',  blank=True, null=True)
-	amount = models.IntegerField('Amount ($)',  blank=True, null=True)
-	
+	Contact_Name = models.CharField('Contact_Name', default='',max_length=100,blank=True, null=True)
+	Company_Name = models.CharField('Company_Name',default='',max_length=100,blank=True, null=True)
+	# invoice_type = models.CharField('Invoice type',max_length=100, blank=True, null=True)
+	Phone = models.CharField('Phone',max_length=100, blank=True, null=True)
+	Date = models.DateField('Date',max_length=100, blank=True, null=True)
+	Invoice_Number = models.IntegerField('Invoice_Number',  blank=True, null=True)
+	Email = models.EmailField('Email',max_length=254,blank=True, null=True)
+	Item = models.CharField('Item',max_length=100, blank=True, null=True)
+	Qty = models.IntegerField('Qty', blank=True, null=True)
+	Unit_Price = models.IntegerField('Unit Price ($)',  blank=True, null=True)
+	Total = models.IntegerField('Total ($)',  blank=True, null=True)
+	Discount = models.IntegerField('Discount ($)',  blank=True, null=True)
+	Balance_Due = models.IntegerField('Balance_Due ($)',  blank=True, null=True)
     
 	def __str__(self) -> str:
-		return self.to
+		return self.Contact_Name
+
+
+class CSVFileUpload(models.Model):
+	csv_file = models.FileField(upload_to='csvs')
+
+	def __str__(self) -> str:
+		return self.csv_file.name
+
 
 	

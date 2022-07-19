@@ -35,11 +35,14 @@ urlpatterns = [
     path('list_excel_data/', views.list_excel_data,name="list_excel_data"),
     path('excel_data_delete/<str:pk>/',views.delete_excel_data,name="excel_data_delete"),
     path('excel_data_update/<str:pk>/',views.update_excel_data,name="excel_data_update"),
+    path('upload_csv_file',views.upload_csv_file, name="upload_csv_file"),
+    
  
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_URL)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 
 
