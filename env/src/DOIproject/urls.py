@@ -31,11 +31,11 @@ urlpatterns = [
     path('list_invoice/', views.list_invoice, name='list_invoice'),
     path('update_invoice/<str:pk>/', views.update_invoice, name="update_invoice"),
     path('delete_invoice/<str:pk>/', views.delete_invoice, name="delete_invoice"),
-    path('upload_file',views.upload_file, name="upload_file"),
+    # path('upload_file',views.upload_file, name="upload_file"),
     path('list_excel_data/', views.list_excel_data,name="list_excel_data"),
     path('excel_data_delete/<str:pk>/',views.delete_excel_data,name="excel_data_delete"),
     path('excel_data_update/<str:pk>/',views.update_excel_data,name="excel_data_update"),
-    path('upload_csv_file',views.upload_csv_file, name="upload_csv_file"),
+    path('upload_csv_file/',views.upload_csv_file, name="upload_csv_file"),
     
  
 ]

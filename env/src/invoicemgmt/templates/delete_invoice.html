@@ -1,6 +1,6 @@
 {% load static %}
 {% load crispy_forms_tags %}
-{% include 'navbar.html' %}
+
 <!DOCTYPE html>
 <html> 
 <head>
@@ -10,7 +10,7 @@
 	<title>{{title}}</title>
 </head>
 <body>
-	<div class="myForm">
+	<div style="margin-left:400px" class="myForm">
     <form method="post" action="">
       {% csrf_token %}
         <h1>Are you sure you want to delete?</h1><br>

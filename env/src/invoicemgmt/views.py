@@ -1,4 +1,5 @@
 # from curses.ascii import HT
+from email import message
 from fileinput import filename
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -40,14 +41,13 @@ import os
 
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'list_invoice.html')
 
 @login_required
 def add_invoice(request):
     form = InvoiceForm(request.POST or None)
     total_invoices = Invoice.objects.count()
     queryset = Invoice.objects.order_by('-invoice_date')[:6]
-    # query = list(Invoice.objects.values('line_one'))
 
     if form.is_valid():
         form.save()
@@ -58,7 +58,6 @@ def add_invoice(request):
         "title": "New Invoice",
         "total_invoices": total_invoices,
 		"queryset": queryset,
-        # "query":query
     }
     return render(request, "entry.html", context)
 
@@ -74,8 +73,10 @@ def list_invoice(request):
     context = {"title": title, "queryset": queryset, "form": form, "csv_upload_form":csv_upload_form}
 
     if request.method == 'POST':
+        
         queryset = Invoice.objects.filter(
-            invoice_number__icontains=form['invoice_number'].value(), name__icontains=form['name'].value())
+            invoice_number__icontains=form['invoice_number'].value())
+        print("in request == post")
         context = {
             "form": form,
             "title": title,
@@ -83,6 +84,7 @@ def list_invoice(request):
             
         }
     if form['generate_invoice'].value() == True:
+        print("In if generate invoice")
         instance = queryset
         data_file = instance
         num_of_invoices = len(queryset)
@@ -332,7 +334,10 @@ def list_invoice(request):
             c.save()
 
         import_data(data_file)
-    return render(request, "list_invoice.html", context)
+    # return render(request, "list_invoice.html", context)
+    messages.success(request, 'Successfully Saved')
+
+    return render(request, "new/list_invoices.html", context)
 
 @login_required
 def list_excel_data(request):
@@ -361,17 +366,29 @@ def update_invoice(request, pk):
 def update_excel_data(request, pk):
     queryset = ExcelDataImport.objects.get(id=pk)
     print(queryset)
-    # if request.method == 'POST':
-    #     form = InvoiceUpdateForm(request.POST, instance=queryset)
-    #     if form.is_valid():
-    #         form.save()
-    #         return redirect('/list_invoice')
+    if request.method == 'POST':
+        
+        cust = request.POST['Contact_Name']
+        company = request.POST['Company_Name']
+        date = request.POST['Date']
+        phone = request.POST['Phone']
+        item = request.POST['Item']
+        qty = request.POST['Qty']
+        u_price = request.POST['Unit_Price']
+        total = request.POST['Total']
+        discount = request.POST['Discount']
+        b_due = request.POST['Balance_Due']
 
-    # context = {
-    #     'form': form
-    # }
-    # return render(request, 'entry.html', context)
-    return redirect('list_invoice')
+        ExcelDataImport.objects.filter(id=pk).update(Contact_Name=cust,Company_Name=company,Phone=phone,Item=item,Qty=qty,Unit_Price=u_price,Total=total,Discount=discount,Balance_Due=b_due)
+        # obj.Item = 'pppqqq'
+        # obj.save()
+        print('got values --------------------')
+        return redirect('list_excel_data')
+    else:
+        context = {
+            'form': queryset
+        }
+        return render(request, 'excel_entry.html', context)
 
 
 @login_required
@@ -391,131 +408,16 @@ def delete_excel_data(request, pk):
     return render(request, 'delete_invoice.html')
 
 
-def create_invoice(sheet):
-    to = sheet.cell(row = 2, column =2 ).value
-    invoice_type = sheet.cell(row = 2, column = 3).value
-    phone = sheet.cell(row = 2, column = 4).value
-    date = sheet.cell(row = 2, column = 5).value
-    invoice_number = str(1234)
-
-
-    
-    pdf_file_name = str(invoice_type) + '_' + str(to) +'.pdf'
-    c = canvas.Canvas(pdf_file_name)
-
-    # image of seal
-    logo = 'logo.png'
-    c.drawImage(logo, 50, 700, width=200, height=120)
-
-    c.setFont('Helvetica', 12, leading=None)
-    c.drawCentredString(400, 660, str(invoice_type) + ':')
-    c.setFont('Helvetica', 12, leading=None)
-    invoice_number_string = str('0000' + invoice_number)
-    c.drawCentredString(490, 660, invoice_number_string)
-
-
-    c.setFont('Helvetica', 12, leading=None)
-    c.drawCentredString(409, 640, "Date:")
-    c.setFont('Helvetica', 12, leading=None)
-    c.drawCentredString(492, 641, date)
-
-    c.setFont('Helvetica', 12, leading=None)
-    c.drawCentredString(98, 640, "Phone: ")
-    c.setFont('Helvetica', 12, leading=None)
-    c.drawCentredString(150, 640, str(phone))     
-
-    c.setFont('Helvetica-Bold', 14, leading=None)
-    c.drawCentredString(310, 580, str(invoice_type))
-    c.drawCentredString(110, 560, "Particulars:")
-    c.drawCentredString(295, 510, "__________________________________________________________")
-    c.drawCentredString(295, 480, "__________________________________________________________")
-    
-
-    c.setFont('Helvetica-Bold', 12, leading=None)
-    c.drawCentredString(110, 520, 'ITEMS')     
-    c.drawCentredString(220, 520, 'QUANTITY')     
-    c.drawCentredString(330, 520, 'UNIT PRICE')     
-    c.drawCentredString(450, 520, 'TOTAL')  
-    row_count = len(list(sheet.rows))
-    print(row_count)
-    # column_count = sheet.max_column
-    for i in range(2,row_count+1):
-        #Reading values from excel file
-
-        item = sheet.cell(row = i, column = 6).value
-        quantity = sheet.cell(row = i, column = 7).value
-        unit_price = sheet.cell(row = i, column = 8).value
-        total = sheet.cell(row = i, column = 9).value
-        total_amount = sheet.cell(row = i, column = 10).value
-        
-        
-
-        c.setFont('Helvetica', 12, leading=None)
-        c.drawCentredString(110, 490-(i)*20, item)     
-        c.drawCentredString(220, 490-(i)*20, str(quantity))     
-        c.drawCentredString(330, 490-(i)*20, str(unit_price))     
-        c.drawCentredString(450, 490-(i)*20, str(total))
-
-        
-
-    c.setFont('Helvetica', 12, leading=None)
-    c.drawCentredString(397, 620, "Amount:")
-    c.setFont('Helvetica-Bold', 12, leading=None)
-    c.drawCentredString(484, 622, '$'+str(total_amount))
-
-
-
-        
-    # TOTAL
-    c.setFont('Helvetica-Bold', 20, leading=None)
-    c.drawCentredString(400, 140, "TOTAL:")
-    c.setFont('Helvetica-Bold', 20, leading=None)
-    c.drawCentredString(484, 140, '$'+str(total_amount)) 
-
-
-    # SIGN
-    c.setFont('Helvetica-Bold', 12, leading=None)
-    c.drawCentredString(150, 140, "Signed:__________________")
-    c.setFont('Helvetica-Bold', 12, leading=None)
-    c.drawCentredString(170, 120, 'Manager') 
-
-
-    c.showPage()
-    c.save()
-
-
-
-
-def upload_file(request):
-    if request.method == "POST":
-        uploaded_file = request.FILES['choose_file']
-        print(uploaded_file.name)
-
-        #convert the font so it is compatible
-        pdfmetrics.registerFont(TTFont('Arial','Arial.ttf'))
-
-        #import the sheet from the excel file
-        wb = openpyxl.load_workbook('C:\\Users\\Abeeshek\\Desktop\\Invoice management system project\\Digitization of Invoice\\env\\src\\InvoiceData.xlsx')
-        sheet = wb['invoices2']
-        print(len(list(sheet.rows)))
-
-        create_invoice(sheet)
-        messages.success(request, 'Successfully Generated Invoice')  
-        return redirect('/')
-
 def upload_csv_file(request):
     if request.method=="POST":
-        # uploaded_file = request.FILES['document']
-        # fs = FileSystemStorage()
-        # fs.save(uploaded_file.name,uploaded_file)
         file = CSVFileUploadForm(request.POST, request.FILES)
         if file.is_valid():
             file.save()
     processCSVData()
-    return HttpResponse('csv file uploaded!!!')
+    messages.success(request, 'Successfully Saved')
+    return redirect('/')
 
 def processCSVData():
-    # word_app = client.Dispatch('Word.Application')
     word_app = client.Dispatch("Word.Application",pythoncom.CoInitialize())
     time.sleep(1)
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -557,7 +459,5 @@ def processCSVData():
         print("Successfully Exported")
 
     word_app.Quit()
-    # messages.success(request,'Successfully Created Invoices')
     return redirect('/')
 
-# def saveExcelDataToDB():

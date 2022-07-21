@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+{% load static %}
+{% load crispy_forms_tags %}
+{% comment %} {% include 'new/navbar.html' %} {% endcomment %}
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Invoice Digitization</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+        <link href="{% static 'css/new/styles.css' %}" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+        <link href="{% static 'js/jquery-ui-1.12.1/jquery-ui.min.css' %}" rel="stylesheet"/>
+        <link href="{% static 'js/jquery-ui-1.12.1/jquery-ui.structure.min.css' %}" rel="stylesheet"/>
+        <link href="{% static 'js/jquery-ui-1.12.1/jquery-ui.theme.min.css' %}" rel="stylesheet"/>
+        <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+        <script src="{% static 'js/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
+        <script src="{% static 'js/myjs.js' %}"></script>
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <!-- Navbar Brand-->
+            <a class="navbar-brand ps-3" href="/">Invoice Digitization</a>
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            
+            <!-- Navbar-->
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#!">Settings</a></li>
+                        <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li>
+                          {% comment %} <a class="dropdown-item" href="#!">Logout</a> {% endcomment %}
+                          {% if request.user.is_authenticated %} 
+                                        <a href="/accounts/logout"><button class="btn btn-danger">{{ user }} | Logout</button></a>
+                                        {% else %}
+                                        <a href="/accounts/login"><button class="btn btn-danger">Login</button></a>
+                                        {% endif %}
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        {% block content %}
+
+        {% endblock content %}
+        
+
+
+
+        <!--##############################################################-->
+
+        <form method='POST' action="{% url 'upload_csv_file' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+        
+            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+        
+                    <div class="mb-3">
+                      <p>Upload CSV or Excel File</p>
+                      
+                      {{ csv_upload_form.as_p}}
+                    </div>
+        
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-sm btn-outline-success" type="submit">
+                      Upload
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        
+          </form>
+
+        <!--##############################################################-->
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'js/new/scripts.js' %}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        {% comment %} <script src="assets/demo/chart-area-demo.js"></script>
+        <script src="assets/demo/chart-bar-demo.js"></script> {% endcomment %}
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+        <script src="{% static 'js/new/datatables-simple-demo.js' %}"></script>
+    </body>
+</html>

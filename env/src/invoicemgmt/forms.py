@@ -54,7 +54,7 @@ class InvoiceSearchForm(forms.ModelForm):
 	generate_invoice = forms.BooleanField(required=False)
 	class Meta:
 		model = Invoice
-		fields = ['invoice_number', 'name','generate_invoice']
+		fields = ['invoice_number','generate_invoice']
 
 
 class InvoiceUpdateForm(forms.ModelForm):

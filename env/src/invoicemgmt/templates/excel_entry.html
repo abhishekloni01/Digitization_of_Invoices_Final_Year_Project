@@ -1,0 +1,145 @@
+
+{% extends 'new/index.html' %}
+{% load static %} 
+{% load crispy_forms_tags %} 
+
+
+    {% block entry %}
+    <div style="margin-left:360px;margin-top:90px">
+      <div class="row">
+      <div class="col-sm-9">
+        <div class="myForm">
+          <form method="POST" action="{% url 'excel_data_update' form.id %}">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-row">
+                  <div class="form-group col-md-3">
+                    
+                      <div class="form-row">
+                        <div class="col">
+                          <label for="">Customer Name</label>
+                          <input name="Contact_Name" type="text" value={{form.Contact_Name}} class="form-control" placeholder="First name">
+                        </div>
+                      </div>
+                   
+                      <div class="form-row">
+                        <div class="col">
+                          <label for="">Date</label>
+                          <input name="Date" type="text" value={{form.Date}} class="form-control" placeholder="First name">
+                        </div>
+                      </div>
+                  </div>
+                  <div class="form-group col-md-3">
+                    <div class="form-row">
+                      <div class="col">
+                        <label for="">Company Name</label>
+                        <input name="Company_Name" type="text" value={{form.Company_Name}} class="form-control" placeholder="First name">
+                      </div>
+                    </div> 
+                    <div class="form-row">
+                      <div class="col">
+                        <label for="">Phone</label>
+                        <input name="Phone" type="text" value={{form.Phone}} class="form-control" placeholder="First name">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <div class="form-row">
+                      <div class="col">
+                        <label for="">Item</label>
+                        <input name="Item" type="text" value={{form.Item}} class="form-control" placeholder="First name">
+                      </div>
+                    </div>
+
+
+                  </div>
+                  <div class="form-group col-md-2">
+                    <div class="form-row">
+                      <div class="col">
+                        <label for="">Qty</label>
+                        <input name="Qty" type="text" value={{form.Qty}} class="form-control" placeholder="First name">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group col-md-3">
+                    <div class="form-row">
+                      <div class="col">
+                        <label for="">Unit_Price</label>
+                        <input name="Unit_Price" type="text" value={{form.Unit_Price}} class="form-control" placeholder="First name">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group col-md-3">
+                    <div class="form-row">
+                      <div class="col">
+                        <label for="">Total</label>
+                        <input name="Total" type="text" value={{form.Total}} class="form-control" placeholder="First name">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                
+
+                <div class="form-row">
+                  <div class="form-group col-md-12">
+                    <div class="form-row">
+                      <div class="col">
+                        <label for="">Discount</label>
+                        <input name="Discount" type="text" value={{form.Discount}} class="form-control" placeholder="First name">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group col-md-12">
+                    <div class="form-row">
+                      <div class="col">
+                        <label for="">Balance_Due</label>
+                        <input name="Balance_Due" type="text" value={{form.Balance_Due}} class="form-control" placeholder="First name">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button id="more-line" type="button" class="btn btn-primary">
+                  Show / Hide More Lines
+                </button>
+
+                <button type="submit" class="btn btn-danger">Save</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <!-- End myform -->
+      </div>
+      <div class="col-sm-3">
+        <div>
+          {% comment %} <div>
+            <span class="text-muted">Recent invoices</span>
+            <span class="badge badge-secondary badge-pill"
+              >{{total_invoices}}</span>
+          </div> {% endcomment %}
+          {% comment %} {% for instance in queryset %}
+          <ul class="list-group mb-3">
+            <li
+              class="list-group-item d-flex justify-content-between lh-condensed">
+              <div>
+                <a href="{% url 'update_invoice' instance.id %}" class="my-0">{{instance.name}}</a>
+                <br />
+                <small class="text-muted">{{instance.invoice_date}}</small
+                ><br />
+              </div>
+              <div class="text-muted">${{instance.total}}</div>
+            </li>
+          </ul>
+          {% endfor %} {% endcomment %}
+        </div>
+      </div>
+    </div>
+    </div>
+    {% endblock entry %}
+  {% comment %} </body>
+</html> {% endcomment %}

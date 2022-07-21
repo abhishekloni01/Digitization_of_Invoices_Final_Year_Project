@@ -1,0 +1,97 @@
+{% extends 'new/index.html' %}
+{% block nav_content.html %}
+{% load crispy_forms_tags %}
+     
+    <div id="layoutSidenav_content">
+        <div class="container">
+            <div class="row my-5 ml-5">
+                <!-- Navbar Search-->
+
+                        <div class="col-sm">
+                            <form method='POST' action='' class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                                {% csrf_token %}
+                            {{ form.invoice_number|as_crispy_field }}
+                        </div>
+                        <div class="col-sm">
+                       
+                            {{ form.generate_invoice|as_crispy_field }}
+                        </div>
+                        <div class="col-sm">
+                            <button type="submit" class="btn btn-primary">Search/Generate</button>
+                        
+                            </form>
+                        </div>
+                        
+
+            </div>
+            
+            <div class="row">
+                <main>
+                    <div class="container-fluid px-4">
+                        
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                Invoices List
+                            </div>
+                            <div class="card-body">
+                                <table id="datatablesSimple">
+                                    <thead>
+                                        <tr>
+                                            <th>Count</th>
+                                            <th>Date</th>
+                                            <th>Customer Name</th>
+                                            <th>Invoice Number</th>
+                                            <th>Amount</th>
+                                            <th>Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Count</th>
+                                            <th>Date</th>
+                                            <th>Customer Name</th>
+                                            <th>Invoice Number</th>
+                                            <th>Amount</th>
+                                            <th>Delete</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        {% for instance in queryset %}
+                                        <tr>
+                                        <td>{{forloop.counter}}</td>
+                                        <td>{{instance.invoice_date}}</td>
+                                        <td><a href="{% url 'update_invoice' instance.id %}">{{instance.name}}</a></td>
+                                        <td>{{instance.invoice_number}}</td>
+                                        <td>{{instance.total}}</td>
+                                        <td><a href="{% url 'delete_invoice' instance.id %}">Delete</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+        
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Your Website 2022</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+
+        </div>
+    
+        
+
+</div> 
+
+{% endblock nav_content.html %}
